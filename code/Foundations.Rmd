@@ -1,0 +1,46 @@
+---
+title: "FoundationsofDataS"
+author: "afidums"
+date: "2026-09-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+# Housekeeping
+## Inventory every active object currently residing in session RAM
+objects()
+## Purge global environment
+rm(list = ls())
+# Confirm that global session memory now completely vacant
+objects()
+#to wipe all past data 
+unlink("~/.RData")
+```
+
+```{r}
+# Load the primary data science framework and Excel import library
+library(tidyverse)
+library(readxl)
+
+# Practice Import A: Loading a standard comma-separated plain text file
+benthic_cover <- read_csv(here::here("data/reef_cover_log.csv"))
+
+# Practice Import B: Parsing a tab-separated telemetry instrument array string
+acoustic_stream <- read_tsv(here::here("data/acoustic_telemetry_stream.txt"))
+
+# Practice Import C: Targeting a specific sheet in a multi-tab Excel spreadsheet
+fisheries_annual <- read_excel(here::here("data/fish_catch_data.xlsx"), sheet = "Commercial_2026")
+
+```
+
+
