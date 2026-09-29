@@ -12,6 +12,15 @@ knitr::opts_chunk$set(echo = TRUE)
 ## R Markdown
 
 ```{r}
+#ignore the Rproj - do not commit it 
+#gitignore is basically saying anything start starts as .() is ignored and anything that ends with *.() means wont be tracked as well 
+## .() for start *.() for end, ex. *.Rproj 
+#commit the changes done to gitignore 
 
+#SHA tells us the version - the code here is the value used to go back to that specific commit version 
+
+#connecting to github 
+library(usethis)
+usethis::use_github()
 ```
 
