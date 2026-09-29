@@ -22,5 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #connecting to github 
 library(usethis)
 usethis::use_github()
+
+#../ (sends it back a file - ex if in code folder, it will come out of it and then be in the main folder) (../data = get out of current folder and then go into data folder)
 ```
 
