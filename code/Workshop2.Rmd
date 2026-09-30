@@ -32,8 +32,9 @@ penguins <- palmerpenguins::penguins
 #Excerise 1 
 #making clean_metadata from island metadata by changing island_name to island and adjusting the station_install with to date objects
 clean_metadata <- island_metadata %>%
-  rename(island = island_name) %>% #renames the island_name column to island 
-  mutate(station_install = dmy(station_install)) #changes the station_install column to date objects using dmy function from lubridate package
+  mutate(station_install = dmy(station_install)) %>%  #changes the station_install column to date objects using dmy function from lubridate package 
+  mutate (island_name = str_trim(island_name)) %>% #removes whitespace from island_name column
+  mutate(island_name = str_to_title(island_name))#changes the first letter of each word in island_name column to uppercase
 
 print(clean_metadata)
 
