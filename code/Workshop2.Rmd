@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Making sure packages are loaded
 library(tidyverse)
 library(palmerpenguins)
+library(lubridate)
 
 # The messy metadata provided by your colleague
 island_metadata <- tibble(
@@ -24,6 +25,20 @@ island_metadata <- tibble(
 )
 
 print(island_metadata)
+#loading in penguins dataset 
+penguins <- palmerpenguins::penguins
+
+#2.11 
+#Excerise 1 
+#making clean_metadata from island metadata by changing island_name to island and adjusting the station_install with to date objects
+clean_metadata <- island_metadata %>%
+  rename(island = island_name) %>% #renames the island_name column to island 
+  mutate(station_install = dmy(station_install)) #changes the station_install column to date objects using dmy function from lubridate package
+
+print(clean_metadata)
+
+#Excerise 2 - Relational Join
+#
 
 ```
 
