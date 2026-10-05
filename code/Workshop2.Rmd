@@ -46,7 +46,16 @@ penguins_spatial <- penguins |> left_join(clean_metadata, by = join_by(island ==
 head(penguins_spatial)
 
 #Excerise 3 - The Wide Summary Matrix 
+#Using penguins_spatial dataset, removing all missing values in body_mass_g, grouping by species and island, and summarising the data to find the maximum body mass (max()) and then pivoting the dataset wider so that the species form rows and the islands form the columns 
 
+penguins_summary <- penguins_spatial %>%
+  filter(!is.na(body_mass_g)) %>% #removes all missing values in body_mass_g column
+  group_by(species, island) %>% #groups the data by species and island
+  summarise(max_body_mass = max(body_mass_g), .groups = "drop") %>% #summarises the data to find the maximum body mass for each group
+  pivot_wider(names_from = island, values_from = max_body_mass) #pivots the dataset wider so that the species form rows and the islands form the columns
+
+#checking the summary
+penguins_summary
 ```
 
 
