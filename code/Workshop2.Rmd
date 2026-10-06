@@ -95,10 +95,11 @@ sonde <- sonde %>% mutate(true_time = dmy_hm(timestamp))
 sonde <- sonde |> mutate(turbidity = na_if(turbidity, -999))
 
 #changing MANGROVE JACK to mangrove_jack
-estuary_catch_log_clean <- estuary_catch_log_clean %>% mutate(species = recode(species, "MANGROVE JACK" = "mangrove_jack")
+estuary_catch_log_clean <- estuary_catch_log_clean %>% mutate(species = recode(species, "MANGROVE JACK" = "mangrove_jack"))
 
 #Phase 2 
 #summerising sonde data - creating a daily summary table that calculates the mean temperature and salinity for each site on each day 
+
 summarised_sonde <- sonde %>%
   group_by(site, date = as.Date(true_time)) %>% #grouping by site and date 
   summarise(mean_temp = mean(temperature, na.rm = TRUE), #calculating mean temperature for each site on each day 
@@ -125,6 +126,15 @@ master_data <- estuary_catch_log_clean2 |>
   left_join(summarised_sonde, by = join_by(site, date))
 
 #Phase 3
+#using tidyr:complete to build a zero data framework, to ensure every species is represented at every site on every sampling day 
+zero_data_framework <- master_data |>
+  complete(site, date, species, fill = list(count = 0))
+#replacing these new NA values in the catch column with 0 using coalesce()
+zero_data_framework <- zero_data_framework |>
+  mutate(catch = coalesce(count, 0))
+
+#Phase 4
+
 ```
 
 
