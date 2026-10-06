@@ -60,6 +60,7 @@ penguins_summary
 
 ```{r}
 #2.12
+#Phase 1
 #loading the data in
 
 library(readxl)
@@ -67,12 +68,63 @@ estuary_catch_log <- read_excel("../data/workshop2/estuary_catch_log.xlsx")
 #combining all the pages of estuary_catch_log into one dataset
 sheets <- excel_sheets("../data/workshop2/estuary_catch_log.xlsx")
 estuary_catch_log <- map_dfr(sheets, ~ read_excel("../data/workshop2/estuary_catch_log.xlsx", sheet = .x))
+
 #changing estuary_catch_long site column to factor 
 estuary_catch_log <- estuary_catch_log %>% mutate(site = as.factor(site))
-#Changing common names to scientific names 
-SN_catch_log <- estuary_catch_log %>% mutate(species = recode(species, "barramundi" = "Lates calcarifer", "MANGROVE JACK" = "Lutjanus argentimaculatus", "bream" = "Acanthopagrus spp.", "flathead" = "Platycephalus spp."))
 
+#changing site names with stringr 
+estuary_catch_log_clean <- estuary_catch_log |>
+  mutate(
+    # 1. Convert everything to lowercase
+    site = str_to_lower(site),
+    # 2. Replace any spaces with underscores
+    site = str_replace_all(site, pattern = " ", replacement = "_"),
+    # 3. Trim any leading or trailing whitespace (invisible spaces at the ends)
+    site = str_trim(site)
+  )
+estuary_catch_log_clean
 
+#changing date to date objects
+estuary_catch_log_clean <- estuary_catch_log_clean %>% mutate(date = ymd(date))
+
+#changing date to date objects in the sonde dataset 
+sonde <- read_csv("../data/workshop2/estuary_sonde_data.csv")
+sonde <- sonde %>% mutate(true_time = dmy_hm(timestamp))
+
+#converting hardware error (-999 turbidity) in sonde to NA values 
+sonde <- sonde |> mutate(turbidity = na_if(turbidity, -999))
+
+#changing MANGROVE JACK to mangrove_jack
+estuary_catch_log_clean <- estuary_catch_log_clean %>% mutate(species = recode(species, "MANGROVE JACK" = "mangrove_jack")
+
+#Phase 2 
+#summerising sonde data - creating a daily summary table that calculates the mean temperature and salinity for each site on each day 
+summarised_sonde <- sonde %>%
+  group_by(site, date = as.Date(true_time)) %>% #grouping by site and date 
+  summarise(mean_temp = mean(temperature, na.rm = TRUE), #calculating mean temperature for each site on each day 
+            mean_salinity = mean(salinity, na.rm = TRUE), #calculating mean salinity for each site on each day 
+            .groups = "drop") #ungrouping the data
+
+#using mutating join to merge species_dictonary into catch data, to replace common names with the scientific names
+#first standardising all the names in the catch data
+estuary_catch_log_clean2 <- estuary_catch_log_clean |>
+  mutate(
+    species = str_to_lower(str_trim(species)),
+    species = str_replace_all(species, " ", "_")
+  )
+#reading in the species dictionary
+species_dictionary <- read_csv("../data/workshop2/species_dictionary.csv")
+
+#adding the scientific names to the catch data using left join - will now include both scientific and common names in the catch data
+estuary_catch_log_clean2 <- estuary_catch_log_clean2 |>
+  mutate(common_name = species) |>
+  left_join(species_dictionary, by = join_by(common_name))
+
+#combining the catch data with the summarised sonde data using a left join into 1 master data frame 
+master_data <- estuary_catch_log_clean2 |>
+  left_join(summarised_sonde, by = join_by(site, date))
+
+#Phase 3
 ```
 
 
