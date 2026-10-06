@@ -58,4 +58,22 @@ penguins_summary <- penguins_spatial %>%
 penguins_summary
 ```
 
+```{r}
+#2.12
+#loading the data in
+
+library(readxl)
+estuary_catch_log <- read_excel("../data/workshop2/estuary_catch_log.xlsx")
+#combining all the pages of estuary_catch_log into one dataset
+sheets <- excel_sheets("../data/workshop2/estuary_catch_log.xlsx")
+estuary_catch_log <- map_dfr(sheets, ~ read_excel("../data/workshop2/estuary_catch_log.xlsx", sheet = .x))
+#changing estuary_catch_long site column to factor 
+estuary_catch_log <- estuary_catch_log %>% mutate(site = as.factor(site))
+#Changing common names to scientific names 
+SN_catch_log <- estuary_catch_log %>% mutate(species = recode(species, "barramundi" = "Lates calcarifer", "MANGROVE JACK" = "Lutjanus argentimaculatus", "bream" = "Acanthopagrus spp.", "flathead" = "Platycephalus spp."))
+
+
+```
+
+
 
