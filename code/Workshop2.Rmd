@@ -128,13 +128,49 @@ master_data <- estuary_catch_log_clean2 |>
 #Phase 3
 #using tidyr:complete to build a zero data framework, to ensure every species is represented at every site on every sampling day 
 zero_data_framework <- master_data |>
-  complete(site, date, species, fill = list(count = 0))
+  complete(site, date, scientific_name, fill = list(count = 0))
 #replacing these new NA values in the catch column with 0 using coalesce()
-zero_data_framework <- zero_data_framework |>
-  mutate(catch = coalesce(count, 0))
+final_dataset <- zero_data_framework |>
+  mutate(count = coalesce(count, 0))
 
 #Phase 4
+#using final dataset to generate a summary table showing mean standard error on fish catch and salinity for each scientific species across each estuary zone 
+master_summary <- final_dataset |>
+  group_by(site, scientific_name) |>
+  summarise(mean_count = mean(count, na.rm = TRUE),
+            se_count = sd(count, na.rm = TRUE) / sqrt(n()),
+            mean_salinity = mean(mean_salinity, na.rm = TRUE),
+            se_salinity = sd(mean_salinity, na.rm = TRUE) / sqrt(n()),
+            .groups = "drop")
 
+#Phase 5 - Visual Communication 
+#visualing how different species change along salinity gradient with a multi-panel plot using ggplot2 and facet_wrap()
+master_summary |> 
+  ggplot(aes(x = site, y = mean_count, fill = scientific_name)) +
+  geom_line(group = 1) +
+  # add in points from master data
+  geom_point(data = final_dataset, aes(x = site, y = count),
+             position = position_jitter(width = 0.2), alpha = 0.2, size = 1, inherit.aes = FALSE) + 
+  geom_point(position = "dodge", size = 4, pch = 23) +
+  # SE pretty narrow, potentially not worth plotting but let's viewer see that included
+  geom_errorbar(aes(ymin = mean_count - se_count, ymax = mean_count + se_count), 
+                position = position_dodge(0.9), width = 0.2) + 
+  facet_wrap(~ scientific_name, scales = "fixed") +
+  theme_minimal() +
+  theme(
+    strip.text = element_text(face = "italic", size = 10, colour = "grey20"), # spp names in italic
+   # legend.position = "bottom"
+    legend.position = "none" # legend unnecessary
+  ) +
+  labs(
+    #title = "Predatory Fish Abundance across Estuarine Salinity Gradients", # default ggplot title appears on top
+    #subtitle = "Ross River Estuary System, May 2026",
+    x = "Spatial Zone",
+    # scientific label for y axis of n day -1 use regex to get superscript
+    y = expression("Abundance (n day"^-1*")"),
+  #  y = "Daily abundance (n day^-1)"
+    y = "Abundance (per day)"
+  )
 ```
 
 
