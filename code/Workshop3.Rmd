@@ -3,3 +3,18 @@ title: "Workshop3"
 output: html_document
 ---
 
+```{r}
+library(ggplot2)
+#https://www.pnas.org/doi/full/10.1073/pnas.1909726116#data-availability
+data <- read.csv("../data/workshop3/Workshop3Data.csv")
+attach(data)
+plot1 <- ggplot(data = data, aes(x = x, y = y)) +
+  geom_point() +
+  xlab("Management Intensity") +
+  ylab()
+  theme_classic() +
+ scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 3)) 
+plot1
+```
+
