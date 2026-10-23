@@ -26,3 +26,5 @@ output/
 *scratch
 *tutor*
 *_files
+.httr-oauth
+.quarto

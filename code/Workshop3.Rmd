@@ -3,6 +3,15 @@ title: "Workshop3"
 output: html_document
 ---
 
+
+```{r}
+#Part 2 
+#The Message - The graphs show the geometric means of U/Umsy and B/Bmsy where U = mortality, B = biommass and msy = maximum sustainable yield. The graph is a function of Management Intensity to those two variables. It is showing with increasing management intensity there is a lower U/Umsy and a higher B/Bmsy. Essentially showing that lowering mortality of the stocks can increase biomass of the stocks. 
+
+#Flaws - The 0 on the graphs are not lined up to the bottom of the graph. The Y-axis is also connected between the two graphs when they are representing two different variables and values. I do not think the two graphs being attached help with any interpretations of the graph. The points are means yet the graphs have no standard error lines. 
+```
+
+
 ```{r}
 library(ggplot2)
 #https://www.pnas.org/doi/full/10.1073/pnas.1909726116#data-availability
@@ -11,7 +20,7 @@ attach(data)
 plot1 <- ggplot(data = data, aes(x = x, y = y)) +
   geom_point() +
   xlab("Management Intensity") +
-  ylab()
+  ylab("U/Umsy") +
   theme_classic() +
  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 3)) 
